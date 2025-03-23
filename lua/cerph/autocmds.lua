@@ -1,14 +1,5 @@
 local group = vim.api.nvim_create_augroup("UserGroup", {})
 
-vim.api.nvim_create_autocmd("ColorScheme", {
-	group = group,
-	callback = function()
-		vim.api.nvim_set_hl(0, "WinSeparator", { bg = "NONE", fg = "#aaaaaa" })
-		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE", fg = "#aaaaaa" })
-		vim.api.nvim_set_hl(0, "FloatBorder", { bg = "NONE", fg = "#aaaaaa" })
-	end,
-	desc = "Brighter window separator",
-})
 
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = group,
@@ -16,4 +7,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 300 })
 	end,
 	desc = "Highlight words when a yank (y) is performed",
+})
+
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = group,
+    callback = function(e)
+                local opts = { buffer = e.buf  }
+                        vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
+                                vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
+                                        vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
+                                                vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
+                                                        vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
+                                                                vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
+                                                                        vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
+                                                                                vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+                                                                                        vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
+                                                                                                vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+                                                                                                    end
 })
