@@ -25,10 +25,10 @@ return {
                 "rust_analyzer",
                 "jinja_lsp",
                 "gopls",
-                "html",
                 "eslint",
                 "tailwindcss",
-                "pyright"
+                "pyright",
+                "omnisharp",
             },
             handlers = {
                 function(server_name)
@@ -46,22 +46,41 @@ return {
                 'isort',
                 'mypy',
                 'pylint',
+                'djlint',
+                "html-lsp",
+                "css-lsp",
             },
         })
-            
-        require("lspconfig").lua_ls.setup{
+        local util = require("lspconfig/util")
+        require("lspconfig").pyright.setup {
+            before_init = function(_, config)
+                local venv = os.getenv("VIRTUAL_ENV")
+                if venv then
+                    config.settings.python.pythonPath = venv .. "/bin/python"
+                end
+            end,
+            root_dir = util.root_pattern(".git", "pyproject.toml", "setup.py"),
+        }
+        require("lspconfig").lua_ls.setup {
             settings = {
                 Lua = {
                     diagnostics = {
-                                    -- Get the language server to recognize the `vim` global
-                                    globals = {'vim'},
-                                              
+                        -- Get the language server to recognize the `vim` global
+                        globals = { 'vim' },
+
                     },
-                            
+
                 },
-                      
+
             },
         }
+        require("lspconfig").cssls.setup({})
+        require("lspconfig").html.setup({})
+        require("lspconfig").omnisharp.setup({
+            cmd = { "omnisharp" },
+            enable_roslyn_analyzers = true,
+            organize_imports_on_format = true
+        })
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
         cmp.setup({
@@ -84,18 +103,22 @@ return {
                 { name = "luasnip" },
                 { name = "buffer" },
                 { name = "path" },
+                { name = "codeium" },
             }),
+            experimental = {
+                ghost_text = true
+            },
             window = {
                 completion = cmp.config.window.bordered(),
                 documentation = cmp.config.window.bordered(),
 
             },
         })
-         local open_floating_preview = vim.lsp.util.open_floating_preview
-            function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-                  opts = opts or {}
-                  opts.border = opts.border or "rounded" -- Set border to rounded
-                  return open_floating_preview(contents, syntax, opts, ...)
+        local open_floating_preview = vim.lsp.util.open_floating_preview
+        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+            opts = opts or {}
+            opts.border = opts.border or "rounded"       -- Set border to rounded
+            return open_floating_preview(contents, syntax, opts, ...)
         end
-    end   
+    end
 }

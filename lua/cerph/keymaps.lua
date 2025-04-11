@@ -12,9 +12,7 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 -- Greatest remap ever
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
-
+vim.keymap.set("v",'<leader>y', ':w !win32yank.exe -i<CR>', { noremap = true, silent = true }, { desc = "Copy to clipboard" })
 vim.keymap.set({ "n", "v" }, "<leader>d", '"_d')
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
